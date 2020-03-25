@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">A-01-MAD</string>
+    <string name="action_settings">Settings</string>
+    <string name="selected">selected</string>
+    <string name="end_date">End date: </string>
+    <string name="select_task_type">Select Task Type:</string>
+    <string name="add_task">Add Task:</string>
+    <string name="enter_new_task">Enter New Task</string>
+    <string name="select_date">Due in:</string>
+    <string name="enter_task_name">Please enter a task name</string>
+    <string name="enter_team_member">Please enter at least one team member</string>
+    <string name="add_team_member">Add Team Member:</string>
+    <string name="userpicture">userPicture</string>
+    <string name="task_title">Task:</string>
+    <string name="add">Add Person</string>
+    <string name="member_name">Enter Member Name</string>
+    <string name="deleteicon">deleteIcon</string>
+    <string name="create_task">Create Task</string>
+    <string name="button_done">Done</string>
+    <string name="person_search_hint">Enter Name</string>
+    <string name="person_search_select">Please select a person</string>
+    <string name="person_search_create">Create</string>
+    <string name="weight_view">Weight:</string>
+    <string name="team_button">Assign Workers</string>
+    <string name="add_subtask">Add Sub-Task</string>
+    <string name="subtask_name_hint">Name</string>
+    <string name="enter_datetime">Please enter the due time</string>
+    <string name="next">Next</string>
+    <string name="no_tasks">Start by creating a task with the button on the bottom-right of the screen</string>
+    <string-array name="workers">
+        <item>Paul</item>
+        <item>Amy</item>
+        <item>Michael</item>
+        <item>Gabriel</item>
+        <item>Duncan</item>
+    </string-array>
+    <string name="title_activity_test">ActivityTest</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="person_already_added">That person was already added</string>
+</resources>
