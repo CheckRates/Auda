@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".CreateSubtasksFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <EditText
+            android:id="@+id/subtask_name_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:hint="Task Name"/>
+        <TextView
+            android:id="@+id/weight_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/priority"
+            android:textSize="10pt"
+            app:layout_constraintTop_toBottomOf="@+id/subtask_name_edittext"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteX="8dp" />
+        <NumberPicker
+            android:id="@+id/subtask_number_picker"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            app:layout_constraintStart_toEndOf="@+id/weight_view"
+            app:layout_constraintTop_toBottomOf="@+id/subtask_name_edittext"/>
+        <Button
+            android:id="@+id/subtasks_button_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/add_subtask"
+            app:layout_constraintTop_toBottomOf="@id/subtask_number_picker"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subtasks"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/subtasks_button_add"
+            tools:layout_editor_absoluteX="16dp" />
+
+
+
+        <Button
+            android:id="@+id/button_create_finalTask"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/create_task"
+            app:layout_constraintTop_toBottomOf="@id/subtasks"
+            android:layout_marginTop="70dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>
