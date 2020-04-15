@@ -14,9 +14,16 @@ public class ReminderBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent){
-        if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())){ // ensures receiver
-            Toast.makeText(context, "Boot completed", Toast.LENGTH_SHORT).show();
+        if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())){
+            boolean noConnectivity = intent.getBooleanExtra(                        // true if there is no connectivity
+                    ConnectivityManager.EXTRA_NO_CONNECTIVITY, false
+            );
+            if (noConnectivity){
+                Toast.makeText(context, "Disconnected", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(context, "Connected", Toast.LENGTH_SHORT).show();
+            }
         }
-
     }
 }

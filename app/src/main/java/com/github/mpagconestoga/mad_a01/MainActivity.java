@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +36,27 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TaskViewModel viewModel;
+    ReminderBroadcastReceiver reminderBroadcastReceiver = new ReminderBroadcastReceiver();
+
+    @Override
+    // FUNCTION   : onStart
+    // DESCRIPTION: Initiates the dynamix broadcast receiver.
+    //              Triggered when app is in foreground.
+    protected void  onStart(){
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        // filter.addAction(); //allows for adding more than one action to the filter
+        registerReceiver(reminderBroadcastReceiver, filter);
+    }
+
+    @Override
+    // FUNCTION   : onStop
+    // DESCRIPTION: Deactivates the dynamix broadcast receiver.
+    //              Triggered when app is in background.
+    protected void  onStop(){
+        super.onStop();
+        unregisterReceiver(reminderBroadcastReceiver);
+    }
 
     @Override
     // FUNCTION   : onCreateView
