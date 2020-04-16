@@ -156,13 +156,17 @@ public class CreateSubtasksFragment extends Fragment {
 
         }
     }
+    // FUNCTION   : createTaskAndFinish
+    // DESCRIPTION: Submit the task to the database and close the activity
     public void createTaskAndFinish()
     {
         // Add task to database and quit activity
         viewModel.createTask();
         parentActivity.finish();
     }
-
+    // FUNCTION   : openConfirmation
+    // DESCRIPTION: open the confirmation dialog when the user clicks
+    //              button to submit the task
     private void openConfirmation(){
         ConfirmationDialog dialog = new ConfirmationDialog();
         dialog.show(getChildFragmentManager(), "Confirm Task Creation");

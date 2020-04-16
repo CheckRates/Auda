@@ -7,6 +7,14 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 public class ConfirmationDialog extends AppCompatDialogFragment {
+
+    /*
+     *    METHOD      :     onCreateDialog
+     *    DESCRIPTION :     Set the title, message, and button text for the subit task
+     *                      confirmation dialogue
+     *    PARAMETERS  :     Bundle savedInstanceState
+     *    RETURNS     :     VOID
+     * */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 

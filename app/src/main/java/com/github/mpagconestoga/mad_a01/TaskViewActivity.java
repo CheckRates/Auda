@@ -137,20 +137,28 @@ public class TaskViewActivity extends AppCompatActivity {
         verifyUserPermissions();
 
     }
-
+    /*
+     *    METHOD      :     verifyUserPermissions
+     *    DESCRIPTION :     Ask for permissions. Need permissions to download image to storage
+     *                      in the task view screen. Downloaded image is loaded as background image
+     *    PARAMETERS  :
+     *    RETURNS     :     VOID
+     * */
     private void verifyUserPermissions() {
         String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+        //check if permissions are granted
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 permission[0]) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 permission[1]) == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "permission granted\n");
+
+            //if permissions are granted then download image and load as background
             DownloadTask downloadTask = new DownloadTask();
             downloadTask.execute(imageURL);
         } else {
-            Log.d(TAG, "permission not granted\n");
+            //do nothing
         }
     }
 

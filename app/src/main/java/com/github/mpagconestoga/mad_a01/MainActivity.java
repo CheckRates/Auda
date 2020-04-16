@@ -107,11 +107,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    /*
+     *    METHOD      :     verifyUserPermissions
+     *    DESCRIPTION :     Ask for permissions. Need permissions to download image to storage
+     *                      in the task view screen
+     *    PARAMETERS  :
+     *    RETURNS     :     VOID
+     * */
     private void verifyUserPermissions() {
         String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA};
+                Manifest.permission.READ_EXTERNAL_STORAGE};
 
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 permission[0]) == PackageManager.PERMISSION_GRANTED
@@ -119,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
                 permission[1]) == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "permission granted\n");
 
-
         } else {
+            //request for permissions if not granted
             ActivityCompat.requestPermissions(MainActivity.this,
                     permission,
                     REQUEST_CODE);
