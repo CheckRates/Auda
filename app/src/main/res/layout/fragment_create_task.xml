@@ -70,17 +70,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/AddTeamMemberTextView" />
 
+    <Button
+        android:id="@+id/button_set_location"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="@string/set_location"
+        app:layout_constraintBottom_toTopOf="@+id/AddTeamMemberTextView"
+        app:layout_constraintTop_toBottomOf="@+id/SelectDueTime"
+        android:layout_marginTop="16dp"
+        tools:layout_editor_absoluteX="16dp" />
+
     <TextView
         android:id="@+id/AddTeamMemberTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="@string/add_team_member"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.003"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SelectDueTime" />
+        app:layout_constraintTop_toBottomOf="@+id/button_set_location" />
 
     <Button
         android:id="@+id/button_insert_person"
