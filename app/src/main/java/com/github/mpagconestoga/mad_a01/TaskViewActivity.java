@@ -9,14 +9,21 @@
 
 package com.github.mpagconestoga.mad_a01;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -24,10 +31,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,7 +72,8 @@ public class TaskViewActivity extends AppCompatActivity {
     private TextView assignedPeopleList;
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
-
+    private static final int REQUEST_CODE = 1;
+    private String imageURL;
 
     // FUNCTION   : onCreate
     // DESCRIPTION: Initate UI Elements
@@ -92,7 +102,6 @@ public class TaskViewActivity extends AppCompatActivity {
         // Get task
         viewModel.setTaskById(taskId);
         Task task = viewModel.getTask();
-
 
         // Set Task Header info
         taskHeader.setText(String.format("%s: %s", getString(R.string.task_header), task.getName()));
@@ -124,9 +133,25 @@ public class TaskViewActivity extends AppCompatActivity {
         subtaskAdapter.setData(task.getSubtasks());
 
         // Logic for saving and loading background image
-        String imageURL = currentCategory.getBackgroundURL();
-        DownloadTask downloadTask = new DownloadTask();
-        downloadTask.execute(imageURL);
+        imageURL = currentCategory.getBackgroundURL();
+        verifyUserPermissions();
+
+    }
+
+    private void verifyUserPermissions() {
+        String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[1]) == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "permission granted\n");
+            DownloadTask downloadTask = new DownloadTask();
+            downloadTask.execute(imageURL);
+        } else {
+            Log.d(TAG, "permission not granted\n");
+        }
     }
 
     /*
@@ -205,7 +230,6 @@ public class TaskViewActivity extends AppCompatActivity {
         }
     }
 
-
     /*
      *   CLASS       : SetBackground
      *   DESCRIPTION : Class responsible for setting the background image for the the task view
@@ -244,4 +268,5 @@ public class TaskViewActivity extends AppCompatActivity {
         }
         return returnString.toString();
     }
+
 }
