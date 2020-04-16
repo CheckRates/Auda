@@ -17,9 +17,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -54,6 +56,8 @@ public class TaskViewActivity extends AppCompatActivity {
     private static final String TAG = "TaskViewActivity";
     private TaskViewModel viewModel;
     private View backgroundView;
+    ConnectionBroadcastReceiver connectionBroadcastReceiver = new ConnectionBroadcastReceiver();
+
 
     // UI elements
     private TextView taskHeader;
@@ -64,6 +68,27 @@ public class TaskViewActivity extends AppCompatActivity {
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
 
+
+
+    @Override
+    // FUNCTION   : onStart
+    // DESCRIPTION: Initiates the dynamix broadcast receiver.
+    //              Triggered when app is in foreground.
+    protected void  onStart(){
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        // filter.addAction(); //allows for adding more than one action to the filter
+        registerReceiver(connectionBroadcastReceiver, filter);
+    }
+
+    @Override
+    // FUNCTION   : onStop
+    // DESCRIPTION: Deactivates the dynamix broadcast receiver.
+    //              Triggered when app is in background.
+    protected void  onStop(){
+        super.onStop();
+        unregisterReceiver(connectionBroadcastReceiver);
+    }
 
     // FUNCTION   : onCreate
     // DESCRIPTION: Initate UI Elements

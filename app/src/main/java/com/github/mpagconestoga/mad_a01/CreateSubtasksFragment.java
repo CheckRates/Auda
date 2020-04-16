@@ -10,6 +10,12 @@
 package com.github.mpagconestoga.mad_a01;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -35,6 +41,9 @@ import com.github.mpagconestoga.mad_a01.viewmodel.CreateTaskViewModel;
 
 import java.util.ArrayList;
 
+import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
+import static android.content.Context.ALARM_SERVICE;
+
 
 public class CreateSubtasksFragment extends Fragment {
     // TAG
@@ -59,6 +68,7 @@ public class CreateSubtasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_create_subtasks, container, false);
+
 
         // Set up RecyclerView and Adapter for the Subtasks list
         subtasks = view.findViewById(R.id.subtasks);
@@ -150,9 +160,27 @@ public class CreateSubtasksFragment extends Fragment {
             // Assign subtask to current task
             viewModel.setCurrentSubtasks(adapter.getSubtasks());
 
+            //Set timer for subtask - THIS IS NOT PERMANENT
+            Intent intent = new Intent(parentActivity, ReminderBroadcastReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(parentActivity, 0, intent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) parentActivity.getSystemService(ALARM_SERVICE);
+
+            long timeAtButtonClick = System.currentTimeMillis();
+
+            long tenSecondsInMillis = 1000 *10; // converts delay to seconds
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP,   // wakes up device to fire pending intent at specified time
+                    timeAtButtonClick + tenSecondsInMillis,
+                    pendingIntent);
+            // END OF TIMER SETUP - STILL NOT PERMANENT
+
+
             // Add task to database and quit activity
             viewModel.createTask();
             parentActivity.finish();
         }
     }
+
+
 }
