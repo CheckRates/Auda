@@ -237,15 +237,17 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
                 Log.d(TAG, "&--> Time in seconds: " + timerService.getElapsedTime());
                 String progress = " " + (hours) + ":";
                 if (hours > 5) {
-                    progress = getString(R.string.more_5_hours);
+                    progress = " "+ getString(R.string.more_5_hours);
                 } else {
                     progress += minutes;
                     if (hours == 0 && minutes < 10) {
-                        progress = getString(R.string.less_minutes);
+                        progress = " " + getString(R.string.less_minutes);
                     }
                 }
                 timerView.setText(progress);
+                timerService.pauseTaskTimer();
                 timerService.resetTimer();
+                timerButton.setText(getString(R.string.task_done));
             }
             }
         });
