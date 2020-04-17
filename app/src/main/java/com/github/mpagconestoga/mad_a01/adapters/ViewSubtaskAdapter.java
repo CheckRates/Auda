@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mpagconestoga.mad_a01.R;
@@ -18,20 +21,22 @@ import com.github.mpagconestoga.mad_a01.objects.Subtask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 public class ViewSubtaskAdapter extends RecyclerView.Adapter<ViewSubtaskAdapter.ViewHolder>  {
     private static final String TAG = "TaskViewSubtaskAdapter";
 
     private List<Subtask> Subtasks;
-
     private ProgressBar progressBar;
-
     private int completionWeight = 0;
     private int currentWeight = 0;
+    private MutableLiveData<Boolean> taskDone;
 
     public ViewSubtaskAdapter(Context context, ProgressBar progressBar) {
         Subtasks = new ArrayList<Subtask>();
         this.progressBar = progressBar;
+        taskDone = new MutableLiveData<>();
+        taskDone.setValue(false);
     }
 
     @NonNull
@@ -67,6 +72,10 @@ public class ViewSubtaskAdapter extends RecyclerView.Adapter<ViewSubtaskAdapter.
         Log.d(TAG, "&--> onBindViewHolder: Position: " + position + "Name: " + subtask.getName());
     }
 
+    public LiveData<Boolean> getTaskDone() {
+        return taskDone;
+    }
+
     @Override
     public int getItemCount() {
         return Subtasks.size();
@@ -94,8 +103,12 @@ public class ViewSubtaskAdapter extends RecyclerView.Adapter<ViewSubtaskAdapter.
                     else {
                         currentWeight -= Subtasks.get(position).getWeight();
                     }
-
                     progressBar.setProgress(currentWeight);
+                    
+                    if(currentWeight == completionWeight)
+                    {
+                        taskDone.setValue(true);
+                    }
                 }
             });
         }

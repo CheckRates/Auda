@@ -9,13 +9,17 @@
 
 package com.github.mpagconestoga.mad_a01;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,10 +28,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +60,7 @@ import java.util.List;
 public class TaskViewActivity extends AppCompatActivity {
     private static final String TAG = "TaskViewActivity";
     private TaskViewModel viewModel;
+    private TaskTimerService timerService;
     private View backgroundView;
 
     // UI elements
@@ -63,6 +71,11 @@ public class TaskViewActivity extends AppCompatActivity {
     private TextView assignedPeopleList;
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
+    private Button timerButton;
+    private TextView timerView;
+
+
+    long totalTime;
 
 
     // FUNCTION   : onCreate
@@ -73,6 +86,7 @@ public class TaskViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_view);
 
+        totalTime = 0;
         // Set up UI elements
         progressBar = findViewById(R.id.task_progress);
         taskHeader = findViewById(R.id.task_title);
@@ -80,6 +94,8 @@ public class TaskViewActivity extends AppCompatActivity {
         categoryLink = findViewById(R.id.website_button);
         assignedPeopleList = findViewById(R.id.assigned_people_list);
         subtaskRecyclerView = findViewById(R.id.viewsubtask_list);
+        timerButton = findViewById(R.id.start_timer_button);
+        timerView = findViewById(R.id.timer_view);
 
         CategoryRepository categoryRepository = new CategoryRepository(this.getApplication());
         subtaskAdapter = new ViewSubtaskAdapter(this, progressBar);
@@ -119,9 +135,91 @@ public class TaskViewActivity extends AppCompatActivity {
         subtaskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         subtaskRecyclerView.setHasFixedSize(true);
 
+        // Get service
+        timerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleUpdates();
+            }
+        });
+
+        viewModel.getBinder().observe(this, new Observer<TaskTimerService.ServBinder>() {
+            @Override
+            public void onChanged(@Nullable TaskTimerService.ServBinder servBinder) {
+                if(servBinder != null) {
+                    Log.d(TAG, "InChanged: connected to the service");
+                    timerService = servBinder.getService();
+                }
+                else {
+                    Log.d(TAG, "InChanged: unbound from the service");
+                    timerService = null;
+                }
+            }
+        });
+
+        viewModel.getIsProgress().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable final Boolean aBoolean) {
+                final Handler handler = new Handler();
+                final Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if (aBoolean) {
+                            if (viewModel.getBinder().getValue() != null) {
+                                if (timerService.getElapsedTime() == timerService.getMaxHours()) {
+                                    viewModel.setIsUpdating(false);
+                                }
+                                handler.postDelayed(this, 100);
+                            }
+                        }
+                        else {
+                            handler.removeCallbacks(this );
+                        }
+                    }
+                };
+
+                if(aBoolean) {
+                    timerButton.setText(getString(R.string.pause));
+                    handler.postDelayed(runnable, 100);
+                }
+
+                else {
+                    if(timerService.getElapsedTime() == timerService.getMaxHours()) {
+                        timerButton.setText(getString(R.string.overtime));
+                    }
+                    else {
+                        timerButton.setText(getString(R.string.resume));
+                    }
+                }
+            }
+        });
+
         // Subtask Adapter
         subtaskRecyclerView.setAdapter(subtaskAdapter);
         subtaskAdapter.setData(task.getSubtasks());
+        subtaskAdapter.getTaskDone().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+            if(timerService != null) {
+                Log.d(TAG, "&--> Task Done");
+                int hours = timerService.getElapsedTime() / 3600;
+                int minutes = (timerService.getElapsedTime() - (hours * 3600)) / 60;
+                Log.d(TAG, "&--> Time in seconds: " + timerService.getElapsedTime());
+                String progress = " " + (hours) + ":";
+                if (hours > 5) {
+                    progress = getString(R.string.more_5_hours);
+                } else {
+                    progress += minutes;
+                    if (hours == 0 && minutes < 10) {
+                        progress = getString(R.string.less_minutes);
+                    }
+                }
+                timerView.setText(progress);
+                timerService.resetTimer();
+            }
+            }
+        });
+
 
         // Logic for saving and loading background image
         String imageURL = currentCategory.getBackgroundURL();
@@ -243,5 +341,48 @@ public class TaskViewActivity extends AppCompatActivity {
             }
         }
         return returnString.toString();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startTimer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(viewModel.getBinder() != null) {
+            unbindService(viewModel.getServiceConnection());
+        }
+    }
+
+    private void startTimer() {
+        Intent serviceIntent = new Intent(this, TaskTimerService.class);
+        startService(serviceIntent);
+        bindService();
+    }
+
+    private void bindService() {
+        Intent serviceIntent = new Intent(this, TaskTimerService.class);
+        bindService(serviceIntent, viewModel.getServiceConnection(), Context.BIND_AUTO_CREATE);
+    }
+
+    private void toggleUpdates() {
+        if(timerService != null) {
+            if(timerService.getElapsedTime() == timerService.getMaxHours()) {
+                timerButton.setText(getString(R.string.start));
+            }
+            else {
+                if(timerService.getIsPaused()) {
+                    timerService.resumeTaskTimer();
+                    viewModel.setIsUpdating(true);
+                }
+                else {
+                    timerService.pauseTaskTimer();
+                    viewModel.setIsUpdating(false);
+                }
+            }
+        }
     }
 }
