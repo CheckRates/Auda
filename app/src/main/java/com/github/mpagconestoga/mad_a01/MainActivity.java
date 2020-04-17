@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -49,8 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Create new task button creation
+                // Create new task button creation
         FloatingActionButton newTaskButton = findViewById(R.id.button_new_task);
         newTaskButton.setOnClickListener(new NewTaskClickListener());
 

@@ -24,6 +24,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider android:name="com.github.mpagconestoga.mad_a01.TaskContentProvider"
+            android:permission="com.github.mpagconestoga.mad_a01.TaskContentProvider.READ_WRITE"
+            android:exported="true"
+            android:authorities="com.github.mpagconestoga.mad_a01"/>
+
     </application>
 
 </manifest>
