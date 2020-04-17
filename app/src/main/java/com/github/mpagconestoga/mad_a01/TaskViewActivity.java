@@ -9,16 +9,23 @@
 
 package com.github.mpagconestoga.mad_a01;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,10 +33,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,11 +79,12 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
     private TextView assignedPeopleList;
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
+    private static final int REQUEST_CODE = 1;
+    private String imageURL;
 
     private Task task = null;
 
     private GoogleMap map;
-
 
     // FUNCTION   : onCreate
     // DESCRIPTION: Initate UI Elements
@@ -142,9 +152,33 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         subtaskAdapter.setData(task.getSubtasks());
 
         // Logic for saving and loading background image
-        String imageURL = currentCategory.getBackgroundURL();
-        DownloadTask downloadTask = new DownloadTask();
-        downloadTask.execute(imageURL);
+        imageURL = currentCategory.getBackgroundURL();
+        verifyUserPermissions();
+
+    }
+    /*
+     *    METHOD      :     verifyUserPermissions
+     *    DESCRIPTION :     Ask for permissions. Need permissions to download image to storage
+     *                      in the task view screen. Downloaded image is loaded as background image
+     *    PARAMETERS  :
+     *    RETURNS     :     VOID
+     * */
+    private void verifyUserPermissions() {
+        String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        //check if permissions are granted
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[1]) == PackageManager.PERMISSION_GRANTED) {
+
+            //if permissions are granted then download image and load as background
+            DownloadTask downloadTask = new DownloadTask();
+            downloadTask.execute(imageURL);
+        } else {
+            //do nothing
+        }
     }
 
     @Override
@@ -231,7 +265,6 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-
     /*
      *   CLASS       : SetBackground
      *   DESCRIPTION : Class responsible for setting the background image for the the task view
@@ -270,4 +303,5 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         }
         return returnString.toString();
     }
+
 }

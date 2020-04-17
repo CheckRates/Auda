@@ -9,11 +9,15 @@
 
 package com.github.mpagconestoga.mad_a01.objects;
 
+import android.content.ContentValues;
+
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import java.text.SimpleDateFormat;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -26,7 +30,7 @@ import java.util.Date;
  */
 @Entity
 public class Task {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)@ColumnInfo(name = "_id")
     private int Id;
     private int CatId;
     private String Name;
@@ -50,6 +54,24 @@ public class Task {
 //        this.Longitude = latLng.longitude;
         this.Lattitude = Lattitude;
         this.Longitude = Longitude;
+    }
+    @Ignore
+    public Task(String Name){
+    }
+
+    public static Task fromContentValues(ContentValues values) {
+        String name = "";
+        if (values.containsKey("Name")) {
+            name = values.getAsString("Name");
+        }
+        if(name != "") {
+            final Task task = new Task(name);
+            return task;
+        }
+        else{
+            return null;
+        }
+
     }
 
     // IDS Getters and Setters

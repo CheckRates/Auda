@@ -7,11 +7,17 @@
  */
 package com.github.mpagconestoga.mad_a01;
 
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
+
 import com.github.mpagconestoga.mad_a01.objects.SwipeButton;
 import com.github.mpagconestoga.mad_a01.viewmodel.SettingsViewModel;
 
@@ -33,6 +39,22 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        //Get a list of task names using the content provider
+        //populate list with names
+        Uri tasksUri = Uri.parse("content://" + TaskContentProvider.AUTHORITY + "/Task");
+        Log.d("MyApp", tasksUri.toString());
+        Cursor cursor = getContentResolver().query(tasksUri,null,null,null,null);
+        String[] columns = {"Name"};
+        int[] to = {R.id.task_name};
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+                this, R.layout.tasks,
+                cursor,
+                columns, to, 0
+        );
+        ListView myList = (ListView)findViewById(R.id.tasks_content_provider);
+        myList.setAdapter(adapter);
+
         swipeButton = findViewById(R.id.swipeButton);
         confirmationText = findViewById(R.id.delete_data_textview);
         confirmationText.setVisibility(View.GONE);

@@ -25,7 +25,7 @@ import com.github.mpagconestoga.mad_a01.dao.PersonTaskDao;
 import com.github.mpagconestoga.mad_a01.dao.SubtaskDao;
 import com.github.mpagconestoga.mad_a01.dao.TaskDao;
 //Set the tables of the class, as well as the version of the database(version increases with each database structure modification
-@androidx.room.Database(entities = {Person.class, Category.class, PersonTask.class, Subtask.class, Task.class}, version = 10, exportSchema = false)
+@androidx.room.Database(entities = {Person.class, Category.class, PersonTask.class, Subtask.class, Task.class}, version = 11, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class Database extends RoomDatabase {
 
@@ -50,7 +50,7 @@ public abstract class Database extends RoomDatabase {
     public static synchronized Database getInstance(Context context){
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    Database.class, "database1.9") //version of the database
+                    Database.class, "database2.0") //version of the database
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .addCallback(roomCallback)
