@@ -40,6 +40,7 @@
     <string name="help_collon">Help:</string>
     <string name="subtask_name_view">Subtask:</string>
     <string name="website_help">Website help</string>
+    <string name="add_to_calendar">Add to Calendar</string>
     <string name="about_text">About:</string>
     <string name="app_info">Version: 1\nDevelopers: Gabriel Gurgel, Michael Gordon, Duncan Snider, Amy Dayasundara, Paul Smith\n</string>
 </resources>

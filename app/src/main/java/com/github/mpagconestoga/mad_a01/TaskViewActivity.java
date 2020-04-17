@@ -52,6 +52,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TaskViewActivity extends AppCompatActivity {
@@ -69,6 +70,7 @@ public class TaskViewActivity extends AppCompatActivity {
     private TextView assignedPeopleList;
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
+    private Button calendarLink;
 
 
 
@@ -104,8 +106,10 @@ public class TaskViewActivity extends AppCompatActivity {
         taskHeader = findViewById(R.id.task_title);
         categoryHeader = findViewById(R.id.category_help_header);
         categoryLink = findViewById(R.id.website_button);
+        calendarLink = findViewById(R.id.calendar_button);
         assignedPeopleList = findViewById(R.id.assigned_people_list);
         subtaskRecyclerView = findViewById(R.id.viewsubtask_list);
+
 
         CategoryRepository categoryRepository = new CategoryRepository(this.getApplication());
         subtaskAdapter = new ViewSubtaskAdapter(this, progressBar);
@@ -118,7 +122,6 @@ public class TaskViewActivity extends AppCompatActivity {
         // Get task
         viewModel.setTaskById(taskId);
         Task task = viewModel.getTask();
-
 
         // Set Task Header info
         taskHeader.setText(String.format("%s: %s", getString(R.string.task_header), task.getName()));
@@ -133,6 +136,7 @@ public class TaskViewActivity extends AppCompatActivity {
         currentCategory.setWebURL(categoryRepository.getWebURL(currentCategory.getName()));
 
         categoryHeader.setText(categoryHelpHeader);
+
         categoryLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,6 +144,17 @@ public class TaskViewActivity extends AppCompatActivity {
                 startActivity(browserIntent);
             }
         });
+
+
+        final String name = task.getName();
+        final Date date = task.getEndTime();
+        calendarLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddToCalendar(name, date);
+            }
+        });
+
 
         // Set subtask recycler list
         subtaskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -271,5 +286,19 @@ public class TaskViewActivity extends AppCompatActivity {
         return returnString.toString();
     }
 
-    
+    // FUNCTION   : onAddToCalendar
+    // DESCRIPTION: Creates an event inside the system calendar
+    public void onAddToCalendar(String title, Date date) {
+        Intent calendar = new Intent(Intent.ACTION_INSERT);
+        calendar.setType("vnd.android.cursor.item/event");
+        long dueDate = date.getTime(); //Get the due date time
+
+        calendar.setData(CalendarContract.Events.CONTENT_URI);
+        calendar.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, dueDate); //Insert the task Due Date
+        calendar.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true); //For an all day event
+
+        calendar.putExtra(CalendarContract.Events.TITLE, title); //Name of the Task
+
+        startActivity(calendar);
+    }
 }
