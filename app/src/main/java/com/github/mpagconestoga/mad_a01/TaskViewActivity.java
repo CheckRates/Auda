@@ -26,7 +26,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.github.mpagconestoga.mad_a01.adapters.ViewSubtaskAdapter;
 import com.github.mpagconestoga.mad_a01.objects.Category;
+import com.github.mpagconestoga.mad_a01.objects.ConnectionBroadcastReceiver;
 import com.github.mpagconestoga.mad_a01.objects.Person;
 import com.github.mpagconestoga.mad_a01.objects.Task;
 import com.github.mpagconestoga.mad_a01.repositories.CategoryRepository;
@@ -50,6 +51,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Calendar;
 import java.util.List;
 
 public class TaskViewActivity extends AppCompatActivity {
@@ -72,26 +74,25 @@ public class TaskViewActivity extends AppCompatActivity {
 
     @Override
     // FUNCTION   : onStart
-    // DESCRIPTION: Initiates the dynamix broadcast receiver.
+    // DESCRIPTION: Initiates the dynamic broadcast receiver.
     //              Triggered when app is in foreground.
     protected void  onStart(){
         super.onStart();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        // filter.addAction(); //allows for adding more than one action to the filter
         registerReceiver(connectionBroadcastReceiver, filter);
     }
 
     @Override
     // FUNCTION   : onStop
-    // DESCRIPTION: Deactivates the dynamix broadcast receiver.
-    //              Triggered when app is in background.
+    // DESCRIPTION: Deactivates the dynamic broadcast receiver.
+    //              Triggered when app is in foreground.
     protected void  onStop(){
         super.onStop();
         unregisterReceiver(connectionBroadcastReceiver);
     }
 
     // FUNCTION   : onCreate
-    // DESCRIPTION: Initate UI Elements
+    // DESCRIPTION: Initiate UI Elements
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -269,4 +270,6 @@ public class TaskViewActivity extends AppCompatActivity {
         }
         return returnString.toString();
     }
+
+    
 }

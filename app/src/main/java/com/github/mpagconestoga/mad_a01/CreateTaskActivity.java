@@ -24,25 +24,9 @@ public class CreateTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
-        createNotificationChannel();
 
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.TaskCreationFragment, new TaskCreationFragment()).commit();
-    }
-
-    private void createNotificationChannel(){
-
-        // if statement for the handling of newer API versions
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "NotifyTaskChannel";
-            String description = "Channel for Notification Reminder";
-            int importance = IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("notifyTask", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 }

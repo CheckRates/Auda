@@ -11,6 +11,7 @@ package com.github.mpagconestoga.mad_a01;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TaskViewModel viewModel;
+    private NotificationManagerCompat notificationManager;
 
 
     @Override
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        notificationManager = NotificationManagerCompat.from(this); // gets reference, allowing sending of notification
 
         // Create new task button creation
         FloatingActionButton newTaskButton = findViewById(R.id.button_new_task);

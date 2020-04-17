@@ -56,7 +56,7 @@ public class TaskCreationFragment extends Fragment {
     // Date Format & TAG
     private static final String TAG = "TaskCreation";
     private static final DateFormat dateFormat = new SimpleDateFormat           // TODO: Change to a config file
-                                ("yyyy-mm-dd hh:mm", Locale.CANADA);
+                                ("yyyy-MM-dd hh:mm", Locale.CANADA);
 
     //---------- Attributes ----------//
     private CreateTaskViewModel viewModel;
@@ -246,7 +246,7 @@ public class TaskCreationFragment extends Fragment {
                             @Override
                             public void onTimeSet(TimePicker view, int endHour, int endMinute) {
                                 // Construct Date value for EndDate Task attribute
-                                calendar.set(endYear, (endMonth  - 1), endDay, endHour, endMinute);
+                                calendar.set(endYear, endMonth, endDay, endHour, endMinute);
                                 taskEndTime = calendar.getTime();
                                 buttonDateTime.setText(dateFormat.format(taskEndTime));
                             }
