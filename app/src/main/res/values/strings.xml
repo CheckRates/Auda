@@ -42,5 +42,7 @@
     <string name="website_help">Website help</string>
     <string name="about_text">About:</string>
     <string name="app_info">Version: 1\nDevelopers: Gabriel Gurgel, Michael Gordon, Duncan Snider, Amy Dayasundara, Paul Smith\n</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="set_location">SET LOCATION</string>
     <string name="app_widget_button">New Task</string>
 </resources>
