@@ -14,6 +14,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,6 +49,11 @@ import com.github.mpagconestoga.mad_a01.objects.Person;
 import com.github.mpagconestoga.mad_a01.objects.Task;
 import com.github.mpagconestoga.mad_a01.repositories.CategoryRepository;
 import com.github.mpagconestoga.mad_a01.viewmodel.TaskViewModel;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -59,7 +66,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class TaskViewActivity extends AppCompatActivity {
+public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "TaskViewActivity";
     private TaskViewModel viewModel;
     private View backgroundView;
@@ -74,6 +81,10 @@ public class TaskViewActivity extends AppCompatActivity {
     private ViewSubtaskAdapter subtaskAdapter;
     private static final int REQUEST_CODE = 1;
     private String imageURL;
+
+    private Task task = null;
+
+    private GoogleMap map;
 
     // FUNCTION   : onCreate
     // DESCRIPTION: Initate UI Elements
@@ -101,10 +112,18 @@ public class TaskViewActivity extends AppCompatActivity {
 
         // Get task
         viewModel.setTaskById(taskId);
-        Task task = viewModel.getTask();
+        task = viewModel.getTask();
+
+        // Setup map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.task_view_map);
+        mapFragment.getMapAsync(this);
 
         // Set Task Header info
         taskHeader.setText(String.format("%s: %s", getString(R.string.task_header), task.getName()));
+
+        Log.d(TAG, "onCreate: TASK LATTITUDE: " + task.getLattitude());
+        Log.d(TAG, "onCreate: TASK LONGITUDE: " + task.getLongitude());
 
         // Set Assigned People display
         assignedPeopleList.setText(generatePeopleList(task.getAssignedPeople()));
@@ -160,6 +179,14 @@ public class TaskViewActivity extends AppCompatActivity {
         } else {
             //do nothing
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(task.getLatLng(), 15));
+        map.addMarker(new MarkerOptions().position(task.getLatLng()));
     }
 
     /*
