@@ -53,7 +53,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         returnIntent = new Intent();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.task_view_map);
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
