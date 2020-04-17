@@ -25,7 +25,7 @@ import androidx.room.PrimaryKey;
                         parentColumns = "Id",
                         childColumns = "PersonId"),
                 @ForeignKey(onDelete = 5/*CASCADE*/, entity = Task.class,
-                        parentColumns = "Id",
+                        parentColumns = "_id",
                         childColumns = "TaskId")
         },
         indices = {@Index("PersonId")})

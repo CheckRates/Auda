@@ -9,18 +9,28 @@
 
 package com.github.mpagconestoga.mad_a01;
 
+
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,12 +39,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +56,11 @@ import com.github.mpagconestoga.mad_a01.objects.Person;
 import com.github.mpagconestoga.mad_a01.objects.Task;
 import com.github.mpagconestoga.mad_a01.repositories.CategoryRepository;
 import com.github.mpagconestoga.mad_a01.viewmodel.TaskViewModel;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -57,7 +73,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class TaskViewActivity extends AppCompatActivity {
+public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "TaskViewActivity";
     private TaskViewModel viewModel;
     private TaskTimerService timerService;
@@ -77,6 +93,13 @@ public class TaskViewActivity extends AppCompatActivity {
 
     long totalTime;
 
+    private static final int REQUEST_CODE = 1;
+    private String imageURL;
+
+
+    private Task task = null;
+
+    private GoogleMap map;
 
     // FUNCTION   : onCreate
     // DESCRIPTION: Initate UI Elements
@@ -107,11 +130,18 @@ public class TaskViewActivity extends AppCompatActivity {
 
         // Get task
         viewModel.setTaskById(taskId);
-        Task task = viewModel.getTask();
+        task = viewModel.getTask();
 
+        // Setup map
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.task_view_map);
+        mapFragment.getMapAsync(this);
 
         // Set Task Header info
         taskHeader.setText(String.format("%s: %s", getString(R.string.task_header), task.getName()));
+
+        Log.d(TAG, "onCreate: TASK LATTITUDE: " + task.getLattitude());
+        Log.d(TAG, "onCreate: TASK LONGITUDE: " + task.getLongitude());
 
         // Set Assigned People display
         assignedPeopleList.setText(generatePeopleList(task.getAssignedPeople()));
@@ -222,9 +252,41 @@ public class TaskViewActivity extends AppCompatActivity {
 
 
         // Logic for saving and loading background image
-        String imageURL = currentCategory.getBackgroundURL();
-        DownloadTask downloadTask = new DownloadTask();
-        downloadTask.execute(imageURL);
+        imageURL = currentCategory.getBackgroundURL();
+        verifyUserPermissions();
+
+    }
+    /*
+     *    METHOD      :     verifyUserPermissions
+     *    DESCRIPTION :     Ask for permissions. Need permissions to download image to storage
+     *                      in the task view screen. Downloaded image is loaded as background image
+     *    PARAMETERS  :
+     *    RETURNS     :     VOID
+     * */
+    private void verifyUserPermissions() {
+        String[] permission = {Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
+        //check if permissions are granted
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permission[1]) == PackageManager.PERMISSION_GRANTED) {
+
+            //if permissions are granted then download image and load as background
+            DownloadTask downloadTask = new DownloadTask();
+            downloadTask.execute(imageURL);
+        } else {
+            //do nothing
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        map = googleMap;
+
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(task.getLatLng(), 15));
+        map.addMarker(new MarkerOptions().position(task.getLatLng()));
     }
 
     /*
@@ -303,7 +365,6 @@ public class TaskViewActivity extends AppCompatActivity {
         }
     }
 
-
     /*
      *   CLASS       : SetBackground
      *   DESCRIPTION : Class responsible for setting the background image for the the task view
@@ -342,6 +403,7 @@ public class TaskViewActivity extends AppCompatActivity {
         }
         return returnString.toString();
     }
+
 
     @Override
     protected void onResume() {

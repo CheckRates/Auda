@@ -127,6 +127,7 @@ public class PersonSearchActivity extends AppCompatActivity {
 
             ArrayList<Person> list = new ArrayList<>(adapter.getFilteredList());
             Person selectedPerson = list.get(selectedItemPosition);
+            returnIntent.setAction("ADD_PERSON");
             returnIntent.putExtra("selected", selectedPerson);
             setResult(Activity.RESULT_OK, returnIntent);
             HideKeyBoardUtility.hideKeyboard(v);

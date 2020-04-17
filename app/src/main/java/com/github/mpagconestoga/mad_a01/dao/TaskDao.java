@@ -8,6 +8,8 @@
 
 package com.github.mpagconestoga.mad_a01.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -43,11 +45,18 @@ public abstract class TaskDao {
     @Query("DELETE FROM Task")
     public abstract void deleteAllTasks();
 
-    @Query("SELECT * FROM Task WHERE Id = :taskId")
+    @Query("SELECT * FROM Task WHERE _id = :taskId")
     public abstract Task getTasksById(int taskId);
 
-    @Query("SELECT * FROM Task ORDER BY Id DESC")
+    @Query("SELECT * FROM Task WHERE _id = :taskId")
+    public abstract Cursor selectById(long taskId);
+
+
+    @Query("SELECT * FROM Task ORDER BY _id DESC")
     public abstract LiveData<List<Task>> getAllTasks();
+
+    @Query("SELECT * FROM Task ORDER BY _id DESC")
+    public abstract Cursor selectAllTasks();
 
     @Transaction
     public void insertTask(Task task, List<Person> assignedPeople, ArrayList<Subtask> subtasks){

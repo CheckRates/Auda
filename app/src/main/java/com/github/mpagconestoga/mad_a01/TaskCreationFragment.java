@@ -78,6 +78,8 @@ public class TaskCreationFragment extends Fragment {
     private EditText taskNameEditText;
     private Category taskCategory;
     private Date taskEndTime = null;
+    private double lattitude;
+    private double longitude;
 
     //---------- Lifecycle methods ----------//
     // FUNCTION   : onCreateView
@@ -136,6 +138,10 @@ public class TaskCreationFragment extends Fragment {
         buttonDateTime = view.findViewById(R.id.button_dateTime);
         dateTimeDialogBuilder(view);
 
+        // Location selection button
+        Button buttonSetLocation = view.findViewById(R.id.button_set_location);
+        buttonSetLocation.setOnClickListener(new SetLocationClickListener());
+
         // Insert/Search Person Activity
         Button buttonAddPerson = view.findViewById(R.id.button_insert_person);
         buttonAddPerson.setOnClickListener(new AddMemberClickListener());
@@ -165,14 +171,19 @@ public class TaskCreationFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == -1) {
+        if (data.getAction().equals("ADD_PERSON")) {
             Person selectedPerson = data.getParcelableExtra("selected");
 
             assert selectedPerson != null;
-            if(insertItem(0, selectedPerson.getName())){
+            if (insertItem(0, selectedPerson.getName())){
                 viewModel.addPerson(selectedPerson);
                 //only add person if they are not in the list.
             }
+        }
+
+        else if (data.getAction().equals("SET_LOCATION")) {
+            lattitude = data.getDoubleExtra("lattitude", 0);
+            longitude = data.getDoubleExtra("longitude", 0);
         }
     }
 
@@ -202,7 +213,8 @@ public class TaskCreationFragment extends Fragment {
             }
 
             // Set the current task in the viewModel to prepare for subtask creation
-            viewModel.setCurrentTask(taskName, taskCategory, taskEndTime);
+            viewModel.setCurrentTask(taskName, taskCategory, taskEndTime, lattitude, longitude);
+
             Log.d(TAG, "--> Current Task Created -- Name: " + viewModel.getCurrentTask().getName());
 
             // Move to Sub-Task Fragment
@@ -212,13 +224,23 @@ public class TaskCreationFragment extends Fragment {
         }
     }
 
-    // FUNCTION   : AddMemberClickListener
+    // CLASS      : AddMemberClickListener
     // DESCRIPTION: Add a person to the member list adapter and therefore in the task's assigned people
     private class AddMemberClickListener implements Button.OnClickListener {
         @Override
         public void onClick(View v) {
             Intent searchIntent = new Intent(parentActivity, PersonSearchActivity.class);
             startActivityForResult(searchIntent, 1);
+        }
+    }
+
+    // CLASS      : SetLocationClickListener
+    // DESCRIPTION: Opens the map selection activity
+    private class SetLocationClickListener implements Button.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Intent mapIntent = new Intent(parentActivity, MapsActivity.class);
+            startActivityForResult(mapIntent, 1);
         }
     }
 

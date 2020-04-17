@@ -10,6 +10,7 @@
 package com.github.mpagconestoga.mad_a01;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -94,7 +95,7 @@ public class CreateSubtasksFragment extends Fragment {
 
         // Get Parent activity
         parentActivity = getActivity();
-        if(parentActivity == null) {
+        if (parentActivity == null) {
             Log.d(TAG, "Unexpected error: Fragment Parent activity does not exists");
             return;
         }
@@ -103,6 +104,7 @@ public class CreateSubtasksFragment extends Fragment {
         viewModel = new ViewModelProvider((ViewModelStoreOwner) parentActivity).get(CreateTaskViewModel.class);
         Log.d(TAG, "&--> Subtask Creation Address: " + viewModel);
     }
+
 
     //---------- OnClick Listeners & Handlers----------//
     // FUNCTION   : AddSubtaskClickListener
@@ -148,11 +150,25 @@ public class CreateSubtasksFragment extends Fragment {
             }
 
             // Assign subtask to current task
+            openConfirmation();
             viewModel.setCurrentSubtasks(adapter.getSubtasks());
 
-            // Add task to database and quit activity
-            viewModel.createTask();
-            parentActivity.finish();
+
         }
+    }
+    // FUNCTION   : createTaskAndFinish
+    // DESCRIPTION: Submit the task to the database and close the activity
+    public void createTaskAndFinish()
+    {
+        // Add task to database and quit activity
+        viewModel.createTask();
+        parentActivity.finish();
+    }
+    // FUNCTION   : openConfirmation
+    // DESCRIPTION: open the confirmation dialog when the user clicks
+    //              button to submit the task
+    private void openConfirmation(){
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        dialog.show(getChildFragmentManager(), "Confirm Task Creation");
     }
 }
