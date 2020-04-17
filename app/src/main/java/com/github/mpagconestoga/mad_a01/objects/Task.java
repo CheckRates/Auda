@@ -14,6 +14,8 @@ import androidx.room.ForeignKey;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Date;
 /*
@@ -31,17 +33,23 @@ public class Task {
     private Category Category;
     private Date StartTime;
     private Date EndTime;
+    private double Lattitude;
+    private double Longitude;
 
     //ignore tells room to not include these values in the database
     @Ignore private ArrayList<Person> assignedPeople;   //holds the list of people assigned to the task
     @Ignore private ArrayList<Subtask> subtasks;        //holds the list of subtasks of the task
 
     // Constructor
-    public Task(String Name, Category Category, Date EndTime) {
+    public Task(String Name, Category Category, Date EndTime, double Lattitude, double Longitude) {
         this.Name = Name;
         this.Category = Category;
         this.StartTime = new Date();
         this.EndTime = EndTime;
+//        this.Lattitude = latLng.latitude;
+//        this.Longitude = latLng.longitude;
+        this.Lattitude = Lattitude;
+        this.Longitude = Longitude;
     }
 
     // IDS Getters and Setters
@@ -93,6 +101,26 @@ public class Task {
 
     public void setCategory(Category category) {
         this.Category = category;
+    }
+
+    public double getLattitude() {
+        return Lattitude;
+    }
+
+    public void setLattitude(double Lattitude) {
+        this.Lattitude = Lattitude;
+    }
+
+    public double getLongitude() {
+        return Longitude;
+    }
+
+    public void setLongitude(double Longitude) {
+        this.Longitude = Longitude;
+    }
+
+    public LatLng getLatLng() {
+        return new LatLng(Lattitude, Longitude);
     }
 
     public ArrayList<Person> getAssignedPeople() {
