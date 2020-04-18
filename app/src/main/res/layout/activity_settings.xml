@@ -79,7 +79,21 @@
         android:layout_marginTop="1dp"
         app:layout_constraintTop_toBottomOf="@id/relativeDeleteLayout"
         android:background="@android:color/darker_gray"/>
+    <TextView
+    android:id="@+id/content_provider_text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintBottom_toTopOf="@id/tasks_content_provider"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="10dp"
+    android:gravity="center"
+    android:text="Getting list of tasks with content provider" />
 
-
+    <ListView
+        android:id="@+id/tasks_content_provider"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

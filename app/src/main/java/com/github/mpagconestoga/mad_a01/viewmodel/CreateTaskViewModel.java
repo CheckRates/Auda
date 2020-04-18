@@ -74,8 +74,8 @@ public class CreateTaskViewModel extends AndroidViewModel {
 
     // FUNCTION   : setCurrentTask
     // DESCRIPTION: Construct the current task being created in the Activity
-    public void setCurrentTask(String name, Category category, Date endTime) {
-        currentTask = new Task(name, category, endTime);
+    public void setCurrentTask(String name, Category category, Date endTime, double lattitude, double longitude) {
+        currentTask = new Task(name, category, endTime, lattitude, longitude);
     }
 
     // FUNCTION   : setCurrentSubtasks
