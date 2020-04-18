@@ -460,6 +460,7 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         calendar.putExtra(CalendarContract.Events.TITLE, title); //Name of the Task
 
         startActivity(calendar);
+    }
 
     @Override
     protected void onResume() {
