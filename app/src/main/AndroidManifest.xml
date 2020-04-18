@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.github.mpagconestoga.mad_a01">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" /> <!-- Calendar SDK -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" /> <!-- Calendar SDK -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -15,6 +20,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +28,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustNothing">
-
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -49,6 +54,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".objects.ReminderBroadcastReceiver" />
         <service android:name=".TaskTimerService" />
         <provider android:name="com.github.mpagconestoga.mad_a01.TaskContentProvider"
             android:permission="com.github.mpagconestoga.mad_a01.TaskContentProvider.READ_WRITE"
@@ -61,7 +67,5 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
-        </receiver>
     </application>
-
 </manifest>

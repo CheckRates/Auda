@@ -56,7 +56,8 @@ public class TaskCreationFragment extends Fragment {
     // Date Format & TAG
     private static final String TAG = "TaskCreation";
     private static final DateFormat dateFormat = new SimpleDateFormat           // TODO: Change to a config file
-                                ("yyyy-MM-dd kk:mm", Locale.CANADA);
+                                ("yyyy-MM-dd hh:mm", Locale.CANADA);
+
 
     //---------- Attributes ----------//
     private CreateTaskViewModel viewModel;

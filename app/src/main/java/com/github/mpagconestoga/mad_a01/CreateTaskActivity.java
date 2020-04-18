@@ -10,7 +10,12 @@ package com.github.mpagconestoga.mad_a01;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 import android.os.Bundle;
+
+import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 
 public class CreateTaskActivity extends AppCompatActivity {
     private static final String TAG = "TaskCreation";
@@ -19,6 +24,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
+
 
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.TaskCreationFragment, new TaskCreationFragment()).commit();

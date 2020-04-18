@@ -11,6 +11,7 @@ package com.github.mpagconestoga.mad_a01;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,8 +45,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private TaskViewModel viewModel;
+    private NotificationManagerCompat notificationManager;
     private static final int REQUEST_CODE = 1;
-
 
     @Override
     // FUNCTION   : onCreateView
@@ -51,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-                // Create new task button creation
+        notificationManager = NotificationManagerCompat.from(this); // gets reference, allowing sending of notification
+
+        // Create new task button creation
         FloatingActionButton newTaskButton = findViewById(R.id.button_new_task);
         newTaskButton.setOnClickListener(new NewTaskClickListener());
 

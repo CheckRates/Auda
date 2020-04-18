@@ -29,15 +29,18 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -52,6 +55,7 @@ import android.widget.Toast;
 
 import com.github.mpagconestoga.mad_a01.adapters.ViewSubtaskAdapter;
 import com.github.mpagconestoga.mad_a01.objects.Category;
+import com.github.mpagconestoga.mad_a01.objects.ConnectionBroadcastReceiver;
 import com.github.mpagconestoga.mad_a01.objects.Person;
 import com.github.mpagconestoga.mad_a01.objects.Task;
 import com.github.mpagconestoga.mad_a01.repositories.CategoryRepository;
@@ -71,6 +75,8 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -78,6 +84,8 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
     private TaskViewModel viewModel;
     private TaskTimerService timerService;
     private View backgroundView;
+    ConnectionBroadcastReceiver connectionBroadcastReceiver = new ConnectionBroadcastReceiver();
+
 
     // UI elements
     private TextView taskHeader;
@@ -87,22 +95,40 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
     private TextView assignedPeopleList;
     private RecyclerView subtaskRecyclerView;
     private ViewSubtaskAdapter subtaskAdapter;
+    private Button calendarLink;
+
+    @Override
+    // FUNCTION   : onStart
+    // DESCRIPTION: Initiates the dynamic broadcast receiver.
+    //              Triggered when app is in foreground.
+    protected void  onStart(){
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(connectionBroadcastReceiver, filter);
+    }
     private Button timerButton;
     private TextView timerView;
-
 
     long totalTime;
 
     private static final int REQUEST_CODE = 1;
     private String imageURL;
 
+    @Override
+    // FUNCTION   : onStop
+    // DESCRIPTION: Deactivates the dynamic broadcast receiver.
+    //              Triggered when app is in foreground.
+    protected void  onStop(){
+        super.onStop();
+        unregisterReceiver(connectionBroadcastReceiver);
+    }
 
     private Task task = null;
 
     private GoogleMap map;
 
     // FUNCTION   : onCreate
-    // DESCRIPTION: Initate UI Elements
+    // DESCRIPTION: Initiate UI Elements
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -115,10 +141,12 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         taskHeader = findViewById(R.id.task_title);
         categoryHeader = findViewById(R.id.category_help_header);
         categoryLink = findViewById(R.id.website_button);
+        calendarLink = findViewById(R.id.calendar_button);
         assignedPeopleList = findViewById(R.id.assigned_people_list);
         subtaskRecyclerView = findViewById(R.id.viewsubtask_list);
         timerButton = findViewById(R.id.start_timer_button);
         timerView = findViewById(R.id.timer_view);
+
 
         CategoryRepository categoryRepository = new CategoryRepository(this.getApplication());
         subtaskAdapter = new ViewSubtaskAdapter(this, progressBar);
@@ -136,7 +164,6 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.task_view_map);
         mapFragment.getMapAsync(this);
-
         // Set Task Header info
         taskHeader.setText(String.format("%s: %s", getString(R.string.task_header), task.getName()));
 
@@ -153,6 +180,7 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         currentCategory.setWebURL(categoryRepository.getWebURL(currentCategory.getName()));
 
         categoryHeader.setText(categoryHelpHeader);
+
         categoryLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +188,17 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
                 startActivity(browserIntent);
             }
         });
+
+
+        final String name = task.getName();
+        final Date date = task.getEndTime();
+        calendarLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onAddToCalendar(name, date);
+            }
+        });
+
 
         // Set subtask recycler list
         subtaskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -406,6 +445,21 @@ public class TaskViewActivity extends AppCompatActivity implements OnMapReadyCal
         return returnString.toString();
     }
 
+
+    // FUNCTION   : onAddToCalendar
+    // DESCRIPTION: Creates an event inside the system calendar
+    public void onAddToCalendar(String title, Date date) {
+        Intent calendar = new Intent(Intent.ACTION_INSERT);
+        calendar.setType("vnd.android.cursor.item/event");
+        long dueDate = date.getTime(); //Get the due date time
+
+        calendar.setData(CalendarContract.Events.CONTENT_URI);
+        calendar.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, dueDate); //Insert the task Due Date
+        calendar.putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true); //For an all day event
+
+        calendar.putExtra(CalendarContract.Events.TITLE, title); //Name of the Task
+
+        startActivity(calendar);
 
     @Override
     protected void onResume() {

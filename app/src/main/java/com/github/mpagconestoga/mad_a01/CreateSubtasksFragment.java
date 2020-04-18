@@ -10,6 +10,9 @@
 package com.github.mpagconestoga.mad_a01;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
@@ -31,10 +34,13 @@ import android.widget.Toast;
 
 import com.github.mpagconestoga.mad_a01.adapters.SubtaskAdapter;
 import com.github.mpagconestoga.mad_a01.objects.HideKeyBoardUtility;
+import com.github.mpagconestoga.mad_a01.objects.ReminderBroadcastReceiver;
 import com.github.mpagconestoga.mad_a01.objects.Subtask;
 import com.github.mpagconestoga.mad_a01.viewmodel.CreateTaskViewModel;
 
-import java.util.ArrayList;
+import java.util.Date;
+
+import static android.content.Context.ALARM_SERVICE;
 
 
 public class CreateSubtasksFragment extends Fragment {
@@ -60,6 +66,7 @@ public class CreateSubtasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_create_subtasks, container, false);
+
 
         // Set up RecyclerView and Adapter for the Subtasks list
         subtasks = view.findViewById(R.id.subtasks);
@@ -152,6 +159,25 @@ public class CreateSubtasksFragment extends Fragment {
             // Assign subtask to current task
             openConfirmation();
             viewModel.setCurrentSubtasks(adapter.getSubtasks());
+            long timeInMilliseconds;
+            long timeAtButtonClick;
+            long finalTime;
+
+            //Set intent for subtask alert
+            Intent intent = new Intent(parentActivity, ReminderBroadcastReceiver.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(parentActivity, 0, intent, 0);
+
+            AlarmManager alarmManager = (AlarmManager) parentActivity.getSystemService(ALARM_SERVICE);
+
+            // timer for alarm is calculated
+            Date date = viewModel.getCurrentTask().getEndTime();
+            timeInMilliseconds = date.getTime();
+            timeAtButtonClick = System.currentTimeMillis();
+            finalTime = (timeAtButtonClick + (timeInMilliseconds-timeAtButtonClick));
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP,   // wakes up device to fire pending intent at specified time
+                    finalTime,
+                    pendingIntent);
 
 
         }

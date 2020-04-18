@@ -51,23 +51,37 @@
             android:id="@+id/assigned_people_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@+id/assigned_people_header"
             app:layout_constraintTop_toTopOf="@+id/assigned_people_header" />
 
         <Button
             android:id="@+id/website_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+
             android:layout_width="126dp"
             android:layout_height="35dp"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
+
             android:text="@string/website_help"
             app:layout_constraintStart_toEndOf="@+id/category_help_header"
             app:layout_constraintTop_toTopOf="@+id/category_help_header" />
 
         <Button
+            android:id="@+id/calendar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="130dp"
+            android:layout_marginLeft="148dp"
+            android:text="@string/add_to_calendar"
+            app:layout_constraintStart_toEndOf="@+id/category_help_header"
+            app:layout_constraintTop_toTopOf="@+id/category_help_header" />
             android:id="@+id/start_timer_button"
             android:layout_width="0dp"
             android:layout_height="38dp"
@@ -86,7 +100,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/category_help_header"
             tools:context=".MapsActivity" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
